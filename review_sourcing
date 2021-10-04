@@ -1,0 +1,41 @@
+import requests
+
+# place_id for a Wendy's I'm using to test: 'ChIJqRNKvGzwMIgRxJnazS1ycus'
+
+# gets all the reviews of a place by it's place_id
+def reviews_by_id(place_id):
+    # set up the request parameters
+    params = {
+      'api_key': '9905079E2CF9485E83F34DC77CF315B5',
+      'search_type': 'place_reviews',
+      'place_id': place_id,
+      'hl': 'en'
+    }
+
+    # make the http GET request to Scale SERP
+    api_result = requests.get('https://api.scaleserp.com/search', params)
+    return api_result.json()
+
+# returns the first page of results for searching "query" in google places
+def places_by_name(query, location, page):
+    # set up the request parameters
+    params = {
+        'api_key': '9905079E2CF9485E83F34DC77CF315B5',
+        'q': query,
+        'search_type': 'places',
+        'hl': 'en',
+        'page': page,
+        'location': location,
+        'google_domain': 'google.com'
+    }
+
+    # make the http GET request to Scale SERP
+    api_result = requests.get('https://api.scaleserp.com/search', params)
+    return api_result.json()
+
+# returns a list of the review bodies as strings
+def review_bodies_only(place_id):
+    bodies = []
+    for review in reviews_by_id('ChIJqRNKvGzwMIgRxJnazS1ycus')["place_reviews_results"]:
+        bodies.append(review["body"])
+    return bodies
