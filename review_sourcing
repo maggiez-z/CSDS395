@@ -36,6 +36,6 @@ def places_by_name(query, location, page):
 # returns a list of the review bodies as strings
 def review_bodies_only(place_id):
     bodies = []
-    for review in reviews_by_id('ChIJqRNKvGzwMIgRxJnazS1ycus')["place_reviews_results"]:
+    for review in reviews_by_id(place_id)["place_reviews_results"]:
         bodies.append(review["body"])
     return bodies
