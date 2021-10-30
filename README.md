@@ -1,21 +1,11 @@
-# CSDS395
-# Case Western Reserve University
-#Sentify
-
-Margaret Butterfield
-
-Yash Goswami
-
-Christine Pan
-
-Stamatis Papadopoulos
-
-Alexander Rambasek
-
-Andrei Tiu
-
-William Turner
-
+## CSDS 395 Case Western Reserve University - Sentify Progress Report 2
+* Margaret Butterfield
+* Yash Goswami
+* Christine Pan
+* Stamatis Papadopoulos
+* Alexander Rambasek
+* Andrei Tiu
+* William Turner
 
 # Background 
 ## Introduction
