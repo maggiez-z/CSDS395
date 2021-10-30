@@ -3,11 +3,17 @@
 #Sentify
 
 Margaret Butterfield
+
 Yash Goswami
+
 Christine Pan
+
 Stamatis Papadopoulos
+
 Alexander Rambasek
+
 Andrei Tiu
+
 William Turner
 
 
