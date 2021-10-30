@@ -58,11 +58,11 @@ The second milestone to reach was to have all sentiment analysis functions finis
 # Updated Management Plan
 
 # Completed Work
-Website is deployed using Elastic Beanstalk with setup HTML in place. Is load-balanced and scalable.
-Lambda is set up to start automating API calls once code is finished. 
-DynamoDB is set up and ready to store data.
-S3 bucket is set up and ready to store data. 
-BERT model plan is completed and ready to be trained.
+* Website is deployed using Elastic Beanstalk with setup HTML in place. Is load-balanced and scalable.
+* Lambda is set up to start automating API calls once code is finished. 
+* DynamoDB is set up and ready to store data.
+* S3 bucket is set up and ready to store data. 
+* BERT model plan is completed and ready to be trained.
 
 # Member Contributions
 Margaret:
