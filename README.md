@@ -25,12 +25,22 @@ The dataset that we are using to train BERT is adapted from the International Wo
 ## API Calls Using AWS Lambda
 Using the trained BERT model, the next part of the project is analyzing actual restaurant reviews. We have chosen to limit our scope to the Cleveland area to offer a dense array of options for our users. Using the Scale SERP API we are going to make 125 API calls a day (number of calls is limited by the API itself) to receive restaurant names and their reviews. Each of these reviews will then go through sentiment analysis to determine the positivity of our selected attributes. The information along with the original review will then be stored in a database. To run this processing and data collection, we are using Amazon Web Services Lambda tool, which is a serverless compute tool that lets users run code without provisioning resources. Lambda has the ability to make hundreds of API calls in seconds and then has a direct pipeline to our database tool. 
 
+## AWS Elastic Beanstalk Website
+The next progression in the website is getting HTML widget functionality established so that there is a usable UI for people to interact with. Currently we are leveraging Bootstrap to lay out our website in a grid like structure that can adjust with browser size. Currently we have 2 widgets on the main page. The search button and the random button. The search button is to allow users to search for a specific restaurant and the random button is to return a random restaurant’s sentiment analysis. 
+
+# Addressing Feedback from Progress Report 1
+It was mentioned that more explanation was required for how the SemEval 2014 dataset would be transferred from 3 polarity labels to 5. In actuality, no transferral is required; the SemEval 2014 dataset contains 5 aspects (food, service, price, ambience, and anecdotes) and 4 polarity labels (positive, negative, neutral, and conflict). Our project is concerned with what SemEval calls their “subtask 4:” “Given a set of pre-identified aspect categories (e.g., {food, price}), determine the polarity (positive, negative, neutral or conflict) of each aspect category.” More can be found here: https://alt.qcri.org/semeval2014/task4/.
+
+Reviews that we obtain from Lambda and ScaleSerp will not be labeled. This is because the data contained in SemEval and the data from ScaleSerp are restaurant reviews that are sourced from similar outlets such as Yelp and FourSquare. The SemEval data is split into training, validation, and testing sets. The performance of the model on the testing sets is assumed to be highly correlated with performance on novel data used in the web application. For the reasons discussed above, it is the opinion of the authors that this assumption is reasonable.
+
+
 # Progress
 Per our last report, our project should have reached a couple of milestones. We had set two personal goals, both of which are to be completed by the time this report is written. 
 
-The first deadline we gave ourselves was to have the frontend functionality completed by October 25th. 
+The first deadline we gave ourselves was to have the frontend functionality completed by October 25th. Our website has widgets for specific and random restaurant querying. It also has a description of what the site does and what parts of reviews we give results for.
 
-The second milestone to reach was to have all sentiment analysis functions finished by October 30th. 
+The second milestone to reach was to have all sentiment analysis functions finished by October 30th. In terms of the model creation and training, this has been accomplished. A confusion matrix of one of the better-performing models is visible below. Although the model could theoretically be deployed as is, we do want to continue experimenting with different parameters to increase performance. For instance, the model is better at recognizing positive sentiments than negative ones, and has some difficulty identifying mixed/conflicted sentiments. Difficulty with conflicted sentiments is to be expected, and if time permits, additional data could be labeled to alleviate class imbalance and smooth model performance. However, the primary focus of the project from here on out will instead be directed towards the creation of the web application and the model integration. More model improvements will be treated as a secondary task.
+
 
 
 # Future Completion Plan
@@ -49,31 +59,45 @@ The second milestone to reach was to have all sentiment analysis functions finis
 
 # Completed Work
 * Website is deployed using Elastic Beanstalk with setup HTML in place. Is load-balanced and scalable.
-* Lambda is set up to start automating API calls once code is finished. 
-* DynamoDB is set up and ready to store data.
-* S3 bucket is set up and ready to store data. 
-* BERT model plan is completed and ready to be trained.
+* Lambda is set up and connected to DynamoDB. Has code set up to make API calls to get restaurant reviews and then stores data within DynamoDB.
+* DynamoDB noSQL tables are set up and have testing objects inside them. Attributes have been defined to hold multiple reviews, restaurant name, and restaurant ID.
+* S3 bucket is set up. Is currently storing past website versions and the BERT model.
+* BERT model is trained and functional, although we will continue to experiment with improvements
+
 
 # Member Contributions
-Margaret:
 
+Margaret:
+* Worked on HTML widgets for website
+* Worked on overall website design 
+* Connected Lambda and DynamoDB
+* Tested writing objects to DynamoDB via Lambda 
+* Wrote sections of Project Report 2
 
 Yash:
-
+* Working more on the BERT model and training to see better fits.
 
 Christine:
 * Set up Project Report 2
 * Filled in sections of Project Report 2
-
+* Assisted in Bootstrap/HTML implementation
+* Worked on website design and UI
 
 Stamatis:
-
+* Continued model training and tuning hyperparameters
 
 Alexander:
-
+* Writing code for model API interface
+* Deploying model to Amazon SageMaker
+* Wrote sections of PR2, primarily “Addressing Feedback”
 
 Andrei:
-
+* World on model training
+* Working more on the BERT model
 
 William:
+* Configured review search API calls to run in lambda
+* Began work on a dynamodb database to store results to avoid redundant search API calls
+* Helped maintain website functionality 
+
 
