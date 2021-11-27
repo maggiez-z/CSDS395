@@ -35,14 +35,39 @@
     </style>
     <script>
       $(document).ready(function () {
+
         let endpoint = 'https://api.scaleserp.com/search'
-        let apiKey = '3C7681EB02424D40AB5C0C5C29D5D2F6'
+        let apiKey = '25E26DE218F141D0A0442701340C491D'
+
+        let loc = 'Cleveland,Ohio,United States'
+
+        //zoom value for location
+        let zoom = 15
+
+        //where model is being hosted
+        let url = 'http://127.0.0.1:5000/predict'
+
+        var restaurants = {};
+
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            loc = "lat:" + position.coords.latitude + ",lon:" + position.coords.longitude + ",zoom:" + zoom;
+          });
+        }
+
+
         $("#searchbutton").click(function() {
           name = $("#input").val();
           const params = {
             api_key: apiKey,
             search_type: "places",
-            q: name
+            q: name,
+            location: loc,
+            page: "1",
+            num: "3",
+            hl: "en",
+            gl: "us",
+            google_domain: "google.com"
           }
           //https://api.scaleserp.com/search?api_key=3C7681EB02424D40AB5C0C5C29D5D2F6&q=pizza
           $.ajax({
@@ -51,12 +76,62 @@
             data: params,
             dataType: "json",
             success: function (data) {
-              console.log(data);
+              res = data['places_results']
+              const review_params = {
+                api_key: apiKey,
+                search_type: "place_reviews",
+                hl: "en",
+                gl: "us",
+                google_domain: "google.com",
+                data_id: -1
+              }
+              for(var i =  0; i < 1; i++){
+                id = res[i].data_id;
+                review_params.data_id = id;
+                //get reviews for this place
+                $.ajax({
+                  url: endpoint,
+                  type: "GET",
+                  data: review_params,
+                  dataType: "json",
+                  success : function (data2) {
+                    console.log(data2)
+                    reviews = data2['place_reviews_results'];
+                    sentiments = [];
+                    for(var j = 0; j < reviews.length; j++) {
+                      data3 = {text: reviews[j]["body"]};
+                      $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: data3,
+                        dataType: "json",
+                        success: function (data4) {
+                          console.log(data4)
+                          sentiments.push(data4)
+                        },
+                        error: function (err) {
+                          console.log(err)
+                        }
+                      })
+                    }
+                    restaurants[id] = sentiments
+                  },
+                  error: function (error) {
+                    console.log(`Error ${error}`);
+                  }
+                })
+              }
+              console.log(restaurants);
             },
             error: function (error) {
               console.log(`Error ${error}`);
             }
           })
+
+          
+          
+
+          /*
           //Get photos from API
           const image = $("#input").val();
           const imageparams = {
@@ -77,6 +152,8 @@
             }
           })
           //Get address
+          */
+
 
         });
       });
@@ -119,7 +196,7 @@
               <div class="bg-white border rounded-5">
                 <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column">
                   <div class="input-group">
-                    <input type="search" id="input" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon">
+                    <input type="search" id="input" class="form-control rounded-left" placeholder="Search" aria-label="Search" aria-describedby="search-addon">
                     <button type="button" id="searchbutton" class="btn btn-outline-primary ripple-surface" style="min-width: 94px;">search</button>
                   </div>
                 </section>
@@ -175,6 +252,11 @@
             </div>
           </div>
         </div>
+
+        <div id="accordion">
+
+        </div>
+
       </div>
     </main>
 
