@@ -50,14 +50,39 @@
 
     <script>
       $(document).ready(function () {
+
         let endpoint = 'https://api.scaleserp.com/search'
-        let apiKey = '3C7681EB02424D40AB5C0C5C29D5D2F6'
+        let apiKey = '25E26DE218F141D0A0442701340C491D'
+
+        let loc = 'Cleveland,Ohio,United States'
+
+        //zoom value for location
+        let zoom = 15
+
+        //where model is being hosted
+        let url = 'http://127.0.0.1:5000/predict'
+
+        var restaurants = {};
+
+        if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            loc = "lat:" + position.coords.latitude + ",lon:" + position.coords.longitude + ",zoom:" + zoom;
+          });
+        }
+
+
         $("#searchbutton").click(function() {
           name = $("#input").val();
           const params = {
             api_key: apiKey,
             search_type: "places",
-            q: name
+            q: name,
+            location: loc,
+            page: "1",
+            num: "3",
+            hl: "en",
+            gl: "us",
+            google_domain: "google.com"
           }
           //https://api.scaleserp.com/search?api_key=3C7681EB02424D40AB5C0C5C29D5D2F6&q=pizza
           $.ajax({
@@ -66,18 +91,120 @@
             data: params,
             dataType: "json",
             success: function (data) {
+              res = data['places_results']
+              const review_params = {
+                api_key: apiKey,
+                search_type: "place_reviews",
+                hl: "en",
+                gl: "us",
+                google_domain: "google.com",
+                data_id: -1
+              }
+              for(var i =  0; i < 1; i++){
+                id = res[i].data_id;
+                review_params.data_id = id;
+                //get reviews for this place
+                $.ajax({
+                  url: endpoint,
+                  type: "GET",
+                  data: review_params,
+                  dataType: "json",
+                  success : function (data2) {
+                    console.log(data2)
+                    reviews = data2['place_reviews_results'];
+                    sentiments = [];
+                    for(var j = 0; j < reviews.length; j++) {
+                      data3 = {text: reviews[j]["body"]};
+                      $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: data3,
+                        dataType: "json",
+                        success: function (data4) {
+                          console.log(data4)
+                          sentiments.push(data4)
+                        },
+                        error: function (err) {
+                          console.log(err)
+                        }
+                      })
+                    }
+                    restaurants[id] = sentiments
+                  },
+                  error: function (error) {
+                    console.log(`Error ${error}`);
+                  }
+                })
+              }
+              console.log(restaurants);
+            },
+            error: function (error) {
+              console.log(`Error ${error}`);
+            }
+          })
+
+          
+          
+
+          /*
+          //Get photos from API
+          const image = $("#input").val();
+          const imageparams = {
+            api_key: apiKey,
+            search_type: "images",
+            q: image
+          }
+          $.ajax({
+            url: endpoint,
+            type: "GET",
+            data: imageparams,
+            dataType: "image",
+            success: function (data) {
               console.log(data);
             },
             error: function (error) {
               console.log(`Error ${error}`);
             }
           })
+          //Get address
+          */
+
+
         });
       });
     </script>
 
   </head>
   <body>
+   
+    <!--Title code and description-->
+    <main>
+      <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-4 fw-bold">Sentify</h1>
+        <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">Learn How People Really Feel About Restaraunts All Around The Globe</p>
+          <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="Platter.jpg" class="d-block w-100" alt="Cannot display image.">
+                </div>
+                <div class="carousel-item">
+                  <img src="Fancy.jpg" class="d-block w-100" alt="Cannot display image.">
+                </div>
+                <div class="carousel-item">
+                  <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+
 <!--Title code and description-->
 <main>
   <div class="px-4 py-5 my-5 text-center">
@@ -96,29 +223,50 @@
             </div>
             <div class="carousel-item">
               <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
+
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
-        </div>
-      </div>
-      <h1 class="display-4 fw-bold">Search For Any Restaraunt</h1>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <section class="pb-4">
-          <div class="bg-white border rounded-5">
-            <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column">
-              <div class="input-group">
-                <input type="search" id="input" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon">
-                <button type="button" id="searchbutton" class="btn btn-outline-primary ripple-surface" style="min-width: 94px;">search</button>
+          <h1 class="display-4 fw-bold">Search For Any Restaraunt</h1>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <section class="pb-4">
+              <div class="bg-white border rounded-5">
+                <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column">
+                  <div class="input-group">
+                    <input type="search" id="input" class="form-control rounded-left" placeholder="Search" aria-label="Search" aria-describedby="search-addon">
+                    <button type="button" id="searchbutton" class="btn btn-outline-primary ripple-surface" style="min-width: 94px;">search</button>
+                  </div>
+                </section>
               </div>
             </section>
           </div>
+          <h3 class="display-7 fw-bold">Restaurant name:</h3>
+        </div>
+        <div class="container px-4">
+      </div>
+      <!--Carousel of API photos-->
+      <div class="px-4 py-5 my-5 text-center">
+        <div class="col-lg-6 mx-auto">
+          <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                </div>
+                <div class="carousel-item">
+                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                </div>
+                <div class="carousel-item">
+                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
         </section>
 
       </div>
@@ -135,79 +283,69 @@
             <div class="carousel-item active">
               <img src="" class="d-block w-100" alt="Cannot display image.">
             </div>
-            <div class="carousel-item">
-              <img src="" class="d-block w-100" alt="Cannot display image.">
+          </div>
+        </div>
+        <!--Restaurant API Info-->
+        <div class="container px-1">
+          <div class="row">
+            <div class="col">
+              Ratings:
+              <p>Address:</p>
+              <p>Phone Number:</p>
             </div>
-            <div class="carousel-item">
-              <img src="" class="d-block w-100" alt="Cannot display image.">
+            <div class="col">
+              Customers are saying...
+            Here's What People Are Saying...
+            </div>
+            <div class="col">
+              Restaurant Info:
+            Number of Reviews
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
         </div>
-      </div>
-    </div>
-    <!--Restaurant API Info-->
-    <div class="container px-1">
-      <div class="row">
-        <div class="col">
-          Ratings:
-          <p>Address:</p>
-          <p>Phone Number:</p>
-        </div>
-        <div class="col">
-          Customers are saying...
-        Here's What People Are Saying...
-        </div>
-        <div class="col">
-          Restaurant Info:
-        Number of Reviews
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
 
-<main>
-  <head>
-    <style>
-      meter {
-        width: 300px;
-        height: 50px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="px-4 py-5 my-5 text-center">
+        <div id="accordion">
 
-      <div>
-        <h3 class="display-7 fw-bold">Price - value</h3>
-        <meter value="25" min="0" max="70"></meter> 
+        </div>
+
       </div>
-      <div>
-        <h3 class="display-7 fw-bold">Atmosphere - value</h3>
-        <meter value="25" min="0" max="70"></meter>  
+    </main>
+
+    <main>
+      <head>
+        <style>
+          meter {
+            width: 300px;
+            height: 50px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="px-4 py-5 my-5 text-center">
+
+          <div>
+            <h3 class="display-7 fw-bold">Price - value</h3>
+            <meter value="25" min="0" max="70"></meter> 
+          </div>
+          <div>
+            <h3 class="display-7 fw-bold">Atmosphere - value</h3>
+            <meter value="25" min="0" max="70"></meter>  
+          </div>
+          <div>
+            <h3 class="display-7 fw-bold">Food - value</h3>
+            <meter value="25" min="0" max="70"></meter>
+          </div>
+        </div>
+      </body>
+    </main>
+    <main>
+      <div class="px-4 py-5 my-5 text-center">
+        <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
+        <a href="https://aws.amazon.com/what-is-cloud-computing"><img src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
       </div>
-      <div>
-        <h3 class="display-7 fw-bold">Food - value</h3>
-        <meter value="25" min="0" max="70"></meter>
-      </div>
+    </main>
     </div>
   </body>
-</main>
-
-<main>
-  <div class="px-4 py-5 my-5 text-center">
-    <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
-    <a href="https://aws.amazon.com/what-is-cloud-computing"><img src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
-  </div>
-</main>
 </html>
 
 
