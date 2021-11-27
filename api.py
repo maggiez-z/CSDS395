@@ -4,14 +4,17 @@ import torch
 import os
 import logging
 
+
 from torchvision import models
 import torchvision.transforms as transforms
 from PIL import Image
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AdamW
 
 
 app = Flask(__name__)
+CORS(app)
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
@@ -73,6 +76,7 @@ def transform_data(data):
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
+        logger.info(request.form)
         data = request.form['text']
         data = transform_data(data)
         prediction = get_prediction(data)
