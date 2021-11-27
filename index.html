@@ -95,8 +95,10 @@
                   data: review_params,
                   dataType: "json",
                   success : function (data2) {
+                    document.getElementById("hData2").innerHTML = data2;
                     console.log(data2)
                     reviews = data2['place_reviews_results'];
+                    document.getElementById("hLength").innerHTML = (reviews.length);
                     sentiments = [];
                     for(var j = 0; j < reviews.length; j++) {
                       data3 = {text: reviews[j]["body"]};
@@ -106,6 +108,7 @@
                         data: data3,
                         dataType: "json",
                         success: function (data4) {
+                          document.getElementById("hData4").innerHTML = data4;
                           console.log(data4)
                           sentiments.push(data4)
                         },
@@ -245,10 +248,12 @@
             <div class="col">
               Customers are saying...
             Here's What People Are Saying...
+            <p id="hData2"></p>
             </div>
             <div class="col">
               Restaurant Info:
-            Number of Reviews
+            Number of Reviews 
+            <p id="hLength"></p>
             </div>
           </div>
         </div>
@@ -273,6 +278,7 @@
         <div class="px-4 py-5 my-5 text-center">
 
           <div>
+            <p id="hData4"></p>
             <h3 class="display-7 fw-bold">Price - value</h3>
             <meter value="25" min="0" max="70"></meter> 
           </div>
