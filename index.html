@@ -1,257 +1,310 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Senitfy: Natural Language Processing</title>
+
+<head>
+  <title>Senitfy: Natural Language Processing</title>
 
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <!-- JQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-  
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Hugo 0.88.1">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
       }
-  
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+
+      var counter = 0;
+
+      function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantPhone) {
+        counter++;
+        $('#accordion').append('' +
+          '<div class="card">' +
+          '<div class="card-header" id="heading' + counter + '">' +
+          '<h5 class="mb-0">' +
+          '<button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse' + counter + '" aria-expanded="true" aria-controls="collapse' + counter + '">' +
+          'Collapsible Group Item Number #' + counter +
+          '</button>' +
+          '</h5>' +
+          '</div>' +
+          '<div id="collapse' + counter + '" class="collapse show" aria-labelledby="heading' + counter + '" data-bs-parent="#accordion">' +
+          '<div class="card-body">' +
+          "Foobar" +
+          '</div>' +
+          '</div>' +
+          '</div>');
       }
-    </style>
-    <script>
-      $(document).ready(function () {
 
-        var counter = 0;
-
-        function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantPhone){
-          counter++;
-          $('#accordion').append(''+
-            '<div class="card">'+
-            '<div class="card-header" id="heading'+counter+'">'+
-            '<h5 class="mb-0">'+
-            '<button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse'+counter+'" aria-expanded="true" aria-controls="collapse'+counter+'">'+
-            'Collapsible Group Item Number #'+ counter +
-            '</button>'+
-            '</h5>'+
-            '</div>'+
-            '<div id="collapse'+counter+'" class="collapse show" aria-labelledby="heading'+counter+'" data-bs-parent="#accordion">'+
-            '<div class="card-body">'+
-            "Foobar"+
-            '</div>'+
-            '</div>'+
-            '</div>');
-        }
-
-        function combineSentiments(sentiments) {
-
-          sentiment = {'positive' : 0, 'negative' : 0, 'none': 0, 'neutral' : 0, 'conflict' : 0};
-          aspects = {'ambience' : sentiment, 'anecdotes' : sentiment, 'food' : sentiment, 'price' : sentiment, 'service' : sentiment};
-          for(var i = 0; i < sentiments.length; i++) {
-            el = sentiments[0];
-            ambience = el['ambience'];
-            anecdotes = el['anecdotes'];
-            food = el['food'];
-            price = el['price'];
-            service = el['service'];
-
-            aspects['ambience'][ambience] +=1;
-            aspects['anecdotes'][anecdotes] +=1;
-            aspects['food'][food] +=1;
-            aspects['price'][price] +=1;
-            aspects['service'][service] +=1;
+      function combineSentiments(sentiments) {
+        let aspects = {
+          'ambience': {
+            'positive': 0,
+            'negative': 0,
+            'none': 0,
+            'neutral': 0,
+            'conflict': 0
+          },
+          'anecdotes': {
+            'positive': 0,
+            'negative': 0,
+            'none': 0,
+            'neutral': 0,
+            'conflict': 0
+          },
+          'food': {
+            'positive': 0,
+            'negative': 0,
+            'none': 0,
+            'neutral': 0,
+            'conflict': 0
+          },
+          'price': {
+            'positive': 0,
+            'negative': 0,
+            'none': 0,
+            'neutral': 0,
+            'conflict': 0
+          },
+          'service': {
+            'positive': 0,
+            'negative': 0,
+            'none': 0,
+            'neutral': 0,
+            'conflict': 0
           }
-          return aspects;
+        };
+        for (let i = 0; i < sentiments.length; i++) {
+          let el = sentiments[i]
+          let ambience = el['ambience'];
+          let anecdotes = el['anecdotes'];
+          let food = el['food'];
+          let price = el['price'];
+          let service = el['service'];
+
+          console.log("Before")
+          console.log(aspects['ambience'][ambience])
+
+          aspects['ambience'][ambience] += 1;
+          aspects['anecdotes'][anecdotes] += 1;
+          aspects['food'][food] += 1;
+          aspects['price'][price] += 1;
+          aspects['service'][service] += 1;
+
+          console.log("After")
+          console.log(aspects['ambience'][ambience])
+
         }
-
-        let endpoint = 'https://api.scaleserp.com/search'
-        let apiKey = '25E26DE218F141D0A0442701340C491D'
-
-        let loc = 'Cleveland,Ohio,United States'
-
-        //zoom value for location
-        let zoom = 15
-
-        //where model is being hosted
-        let url = 'http://127.0.0.1:5000/predict'
-
-        var restaurants = {};
-
-        if(navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            loc = "lat:" + position.coords.latitude + ",lon:" + position.coords.longitude + ",zoom:" + zoom;
-          });
-        }
+        console.log(aspects);
+        return aspects;
+      }
 
 
-        $("#searchbutton").click(function() {
-          name = $("#input").val();
-          const params = {
-            api_key: apiKey,
-            search_type: "places",
-            q: name,
-            location: loc,
-            page: "1",
-            num: "3",
-            hl: "en",
-            gl: "us",
-            google_domain: "google.com"
-          }
-          //https://api.scaleserp.com/search?api_key=3C7681EB02424D40AB5C0C5C29D5D2F6&q=pizza
-          $.ajax({
-            url: endpoint,
-            type: "GET",
-            data: params,
-            dataType: "json",
-            success: function (data) {
-              res = data['places_results']
-              const review_params = {
-                api_key: apiKey,
-                search_type: "place_reviews",
-                hl: "en",
-                gl: "us",
-                google_domain: "google.com",
-                data_id: -1
-              }
-              for(var i =  0; i < Math.min(5, res.length); i++){
-                makeAccordion();
-                id = res[i].data_id;
-                review_params.data_id = id;
-                //get reviews for this place
-                $.ajax({
-                  url: endpoint,
-                  type: "GET",
-                  data: review_params,
-                  dataType: "json",
-                  success : function (data2) {
-                    document.getElementById("hData2").innerHTML = data2;
-                    console.log(data2)
-                    reviews = data2['place_reviews_results'];
-                    document.getElementById("hLength").innerHTML = (reviews.length);
-                    sentiments = [];
-                    for(var j = 0; j < reviews.length; j++) {
-                      data3 = {text: reviews[j]["body"]};
-                      $.ajax({
-                        url: url,
-                        type: "POST",
-                        data: data3,
-                        dataType: "json",
-                        success: function (data4) {
-                          document.getElementById("hData4").innerHTML = data4;
-                          console.log(data4)
-                          sentiments.push(data4)
-                        },
-                        error: function (err) {
-                          console.log(err)
-                        }
-                      })
-                    }
-                    restaurants[id] = sentiments
-                  },
-                  error: function (error) {
-                    console.log(`Error ${error}`);
-                  }
-                })
-              }
-              console.log(restaurants);
-            },
-            error: function (error) {
-              console.log(`Error ${error}`);
-            }
-          })
 
-          
-          // Comment out till fixed
+      let endpoint = 'https://api.scaleserp.com/search'
+      let apiKey = '976CA837302640C19C622A2A3F107FBD'
 
-          /*
-          //Get photos from API
-          const image = $("#input").val();
-          const imageparams = {
-            api_key: apiKey,
-            search_type: "images",
-            q: image
-          }
-          $.ajax({
-            url: endpoint,
-            type: "GET",
-            data: imageparams,
-            dataType: "image",
-            success: function (data) {
-              console.log(data);
-            },
-            error: function (error) {
-              console.log(`Error ${error}`);
-            }
-          })
-          //Get address
-          */
+      let loc = 'Cleveland,Ohio,United States'
 
+      //zoom value for location
+      let zoom = 15
 
+      //where model is being hosted
+      let url = 'http://127.0.0.1:5000/predict'
+
+      var restaurants = {};
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          loc = "lat:" + position.coords.latitude + ",lon:" + position.coords.longitude + ",zoom:" + zoom;
         });
+      }
+
+
+      $("#searchbutton").click(function () {
+        name = $("#input").val();
+        const params = {
+          api_key: apiKey,
+          search_type: "places",
+          q: name,
+          location: loc,
+          page: "1",
+          num: "3",
+          hl: "en",
+          gl: "us",
+          google_domain: "google.com"
+        }
+        //https://api.scaleserp.com/search?api_key=3C7681EB02424D40AB5C0C5C29D5D2F6&q=pizza
+        $.ajax({
+          url: endpoint,
+          type: "GET",
+          data: params,
+          dataType: "json",
+          success: function (data) {
+            res = data['places_results']
+            const review_params = {
+              api_key: apiKey,
+              search_type: "place_reviews",
+              hl: "en",
+              gl: "us",
+              google_domain: "google.com",
+              data_id: -1
+            }
+            for (let i = 0; i < Math.min(3, res.length); i++) {
+              makeAccordion();
+              id = res[i].data_id;
+              review_params.data_id = id;
+              //get reviews for this place
+              $.ajax({
+                url: endpoint,
+                type: "GET",
+                data: review_params,
+                dataType: "json",
+                success: function (data2) {
+                  document.getElementById("hData2").innerHTML = data2;
+                  reviews = data2['place_reviews_results'];
+                  document.getElementById("hLength").innerHTML = (reviews.length);
+                  let sentiments = [];
+                  var promises = [];
+                  for (let j = 0; j < reviews.length; j++) {
+                    data3 = { text: reviews[j]["body"] };
+                    promises.push($.ajax({
+                      url: url,
+                      type: "POST",
+                      data: data3,
+                      dataType: "json"
+                    }));
+                  }
+
+                  $.when(...promises).then(function(...responses){
+                    const sentiments = responses.map(x => x[0]);
+                    console.log(sentiments);
+                    console.log(sentiments.length);
+                    console.log(combineSentiments(sentiments));
+                  });
+                  
+                  //restaurants[id] = combineSentiments(sentiments);
+                },
+                error: function (error) {
+                  console.log(`Error ${error}`);
+                }
+              })
+            }
+            //console.log(restaurants);
+          },
+          error: function (error) {
+            console.log(`Error ${error}`);
+          }
+        })
+
+
+        // Comment out till fixed
+
+        /*
+        //Get photos from API
+        const image = $("#input").val();
+        const imageparams = {
+          api_key: apiKey,
+          search_type: "images",
+          q: image
+        }
+        $.ajax({
+          url: endpoint,
+          type: "GET",
+          data: imageparams,
+          dataType: "image",
+          success: function (data) {
+            console.log(data);
+          },
+          error: function (error) {
+            console.log(`Error ${error}`);
+          }
+        })
+        //Get address
+        */
+
+
       });
-    </script>
-  </head>
-  <body>
-   
-    <!--Title code and description-->
-    <main>
-      <div class="px-4 py-5 my-5 text-center">
-        <h1 class="display-4 fw-bold">Sentify</h1>
-        <div class="col-lg-6 mx-auto">
-          <p class="lead mb-4">Learn How People Really Feel About Restaraunts All Around The Globe</p>
-          <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-              <div class="carousel-inner">
-                <div class="carousel-item active">
-                  <img src="Platter.jpg" class="d-block w-100" alt="Cannot display image.">
-                </div>
-                <div class="carousel-item">
-                  <img src="Fancy.jpg" class="d-block w-100" alt="Cannot display image.">
-                </div>
-                <div class="carousel-item">
-                  <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
-                </div>
+    });
+  </script>
+</head>
+
+<body>
+
+  <!--Title code and description-->
+  <main>
+    <div class="px-4 py-5 my-5 text-center">
+      <h1 class="display-4 fw-bold">Sentify</h1>
+      <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Learn How People Really Feel About Restaraunts All Around The Globe</p>
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+          <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="Platter.jpg" class="d-block w-100" alt="Cannot display image.">
               </div>
-              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-              </button>
+              <div class="carousel-item">
+                <img src="Fancy.jpg" class="d-block w-100" alt="Cannot display image.">
+              </div>
+              <div class="carousel-item">
+                <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
+              </div>
             </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+              data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+              data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
           </div>
-          <h1 class="display-4 fw-bold">Search For Any Restaraunt</h1>
-          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <section class="pb-4">
-              <div class="bg-white border rounded-5">
-                <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column">
-                  <div class="input-group">
-                    <input type="search" id="input" class="form-control rounded-left" placeholder="Search" aria-label="Search" aria-describedby="search-addon">
-                    <button type="button" id="searchbutton" class="btn btn-outline-primary ripple-surface" style="min-width: 94px;">search</button>
-                  </div>
-                </section>
-              </div>
-            </section>
-          </div>
-          <h3 class="display-7 fw-bold">Restaurant name:</h3>
         </div>
-        <div class="container px-4">
+        <h1 class="display-4 fw-bold">Search For Any Restaraunt</h1>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <section class="pb-4">
+            <div class="bg-white border rounded-5">
+              <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column">
+                <div class="input-group">
+                  <input type="search" id="input" class="form-control rounded-left" placeholder="Search"
+                    aria-label="Search" aria-describedby="search-addon">
+                  <button type="button" id="searchbutton" class="btn btn-outline-primary ripple-surface"
+                    style="min-width: 94px;">search</button>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+        <h3 class="display-7 fw-bold">Restaurant name:</h3>
+      </div>
+      <div class="container px-4">
       </div>
       <!--Carousel of API photos-->
       <div class="px-4 py-5 my-5 text-center">
@@ -269,11 +322,13 @@
                   <img src="" class="d-block w-100" alt="Cannot display image.">
                 </div>
               </div>
-              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
               </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
               </button>
@@ -290,61 +345,61 @@
             </div>
             <div class="col">
               Customers are saying...
-            Here's What People Are Saying...
-            <p id="hData2"></p>
+              Here's What People Are Saying...
+              <p id="hData2"></p>
             </div>
             <div class="col">
               Restaurant Info:
-            Number of Reviews 
-            <p id="hLength"></p>
+              Number of Reviews
+              <p id="hLength"></p>
             </div>
           </div>
         </div>
 
         <div id="accordion">
-         
+
         </div>
 
       </div>
-    </main>
+  </main>
 
-    <main>
-      <head>
-        <style>
-          meter {
-            width: 300px;
-            height: 50px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="px-4 py-5 my-5 text-center">
+  <main>
 
-          <div>
-            <p id="hData4"></p>
-            <h3 class="display-7 fw-bold">Price - value</h3>
-            <meter value="25" min="0" max="70"></meter> 
-          </div>
-          <div>
-            <h3 class="display-7 fw-bold">Atmosphere - value</h3>
-            <meter value="25" min="0" max="70"></meter>  
-          </div>
-          <div>
-            <h3 class="display-7 fw-bold">Food - value</h3>
-            <meter value="25" min="0" max="70"></meter>
-          </div>
-        </div>
-      </body>
-    </main>
-    <main>
+    <head>
+      <style>
+        meter {
+          width: 300px;
+          height: 50px;
+        }
+      </style>
+    </head>
+
+    <body>
       <div class="px-4 py-5 my-5 text-center">
-        <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
-        <a href="https://aws.amazon.com/what-is-cloud-computing"><img src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
+
+        <div>
+          <p id="hData4"></p>
+          <h3 class="display-7 fw-bold">Price - value</h3>
+          <meter value="25" min="0" max="70"></meter>
+        </div>
+        <div>
+          <h3 class="display-7 fw-bold">Atmosphere - value</h3>
+          <meter value="25" min="0" max="70"></meter>
+        </div>
+        <div>
+          <h3 class="display-7 fw-bold">Food - value</h3>
+          <meter value="25" min="0" max="70"></meter>
+        </div>
       </div>
-    </main>
-  </body>
+    </body>
+  </main>
+  <main>
+    <div class="px-4 py-5 my-5 text-center">
+      <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
+      <a href="https://aws.amazon.com/what-is-cloud-computing"><img
+          src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
+    </div>
+  </main>
+</body>
+
 </html>
-
-
-
-
