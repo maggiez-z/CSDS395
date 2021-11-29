@@ -43,8 +43,30 @@
       var counter = 0;
 
       function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantSentiments) {
+        console.log(restaurantSentiments);
         counter++;
-        let title = restaurantName + " - " + restaurantAddress + " - " + restaurantRatings + " out of 5 \u2B50"
+        let title = restaurantName + " - " + restaurantAddress + " - " + restaurantRatings + " out of 5 \u2B50";
+        let percentages = [];
+        let aspects = ['ambience', 'anecdotes', 'food', 'price', 'service']
+        for (el in aspects) {
+          let pos = (restaurantSentiments[aspects[el]]['positive'] + restaurantSentiments[aspects[el]]['conflict']);
+          if (pos + restaurantSentiments[aspects[el]]['negative'] == 0) {
+            percentages.push(null)
+          } else {
+            percentages.push(pos / (pos + restaurantSentiments[aspects[el]]['negative']));
+          }
+        }
+
+        let body = ""
+        let i = 0
+        aspects.forEach(function(aspect) {
+          if(percentages[i]) {
+            body = body + '<p>' + Math.floor(percentages[i] * 100) + '%' + " of users liked the " + aspect + '</p>';
+          }
+          i++;
+        });
+
+
         $('#accordion').append('' +
           '<div class="card">' +
           '<div class="card-header" id="heading' + counter + '">' +
@@ -56,7 +78,7 @@
           '</div>' +
           '<div id="collapse' + counter + '" class="collapse show" aria-labelledby="heading' + counter + '" data-bs-parent="#accordion">' +
           '<div class="card-body">' +
-          JSON.stringify(restaurantSentiments) +
+          body +
           '</div>' +
           '</div>' +
           '</div>');
@@ -122,7 +144,7 @@
 
 
       let endpoint = 'https://api.scaleserp.com/search'
-      let apiKey = '976CA837302640C19C622A2A3F107FBD'
+      let apiKey = 'D176D541CCEF48E3A608149CCD6DFEAC'
 
       let loc = 'Cleveland,Ohio,United States'
 
@@ -180,9 +202,7 @@
                 data: review_params,
                 dataType: "json",
                 success: function (data2) {
-                  document.getElementById("hData2").innerHTML = data2;
                   reviews = data2['place_reviews_results'];
-                  document.getElementById("hLength").innerHTML = (reviews.length);
                   let sentiments = [];
                   var promises = [];
                   for (let j = 0; j < reviews.length; j++) {
