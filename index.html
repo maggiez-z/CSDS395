@@ -42,20 +42,21 @@
 
       var counter = 0;
 
-      function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantPhone) {
+      function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantSentiments) {
         counter++;
+        let title = restaurantName + " - " + restaurantAddress + " - " + restaurantRatings + " out of 5 \u2B50"
         $('#accordion').append('' +
           '<div class="card">' +
           '<div class="card-header" id="heading' + counter + '">' +
           '<h5 class="mb-0">' +
           '<button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse' + counter + '" aria-expanded="true" aria-controls="collapse' + counter + '">' +
-          'Collapsible Group Item Number #' + counter +
+          title +
           '</button>' +
           '</h5>' +
           '</div>' +
           '<div id="collapse' + counter + '" class="collapse show" aria-labelledby="heading' + counter + '" data-bs-parent="#accordion">' +
           '<div class="card-body">' +
-          "Foobar" +
+          JSON.stringify(restaurantSentiments) +
           '</div>' +
           '</div>' +
           '</div>');
@@ -107,17 +108,11 @@
           let price = el['price'];
           let service = el['service'];
 
-          console.log("Before")
-          console.log(aspects['ambience'][ambience])
-
           aspects['ambience'][ambience] += 1;
           aspects['anecdotes'][anecdotes] += 1;
           aspects['food'][food] += 1;
           aspects['price'][price] += 1;
           aspects['service'][service] += 1;
-
-          console.log("After")
-          console.log(aspects['ambience'][ambience])
 
         }
         console.log(aspects);
@@ -176,7 +171,6 @@
               data_id: -1
             }
             for (let i = 0; i < Math.min(3, res.length); i++) {
-              makeAccordion();
               id = res[i].data_id;
               review_params.data_id = id;
               //get reviews for this place
@@ -203,9 +197,8 @@
 
                   $.when(...promises).then(function(...responses){
                     const sentiments = responses.map(x => x[0]);
-                    console.log(sentiments);
-                    console.log(sentiments.length);
-                    console.log(combineSentiments(sentiments));
+                    makeAccordion(res[i]["title"], res[i]["rating"], res[i]["address"], combineSentiments(sentiments));
+
                   });
                   
                   //restaurants[id] = combineSentiments(sentiments);
@@ -302,7 +295,6 @@
             </div>
           </section>
         </div>
-        <h3 class="display-7 fw-bold">Restaurant name:</h3>
       </div>
       <div class="container px-4">
       </div>
@@ -335,27 +327,8 @@
             </div>
           </div>
         </div>
-        <!--Restaurant API Info-->
-        <div class="container px-1">
-          <div class="row">
-            <div class="col">
-              Ratings:
-              <p>Address:</p>
-              <p>Phone Number:</p>
-            </div>
-            <div class="col">
-              Customers are saying...
-              Here's What People Are Saying...
-              <p id="hData2"></p>
-            </div>
-            <div class="col">
-              Restaurant Info:
-              Number of Reviews
-              <p id="hLength"></p>
-            </div>
-          </div>
-        </div>
 
+        <!--List of restaurants-->
         <div id="accordion">
 
         </div>
