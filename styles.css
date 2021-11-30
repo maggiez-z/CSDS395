@@ -2,10 +2,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@200;700&family=Big+Shoulders+Inline+Display&family=Cairo:wght@300&display=swap');
 
 body{
+    background-color: #F9F4F0;
     font-family: 'Cairo', sans-serif;
 }
 
 .headerfont{
     font-family: 'Big Shoulders Inline Display', cursive;
     letter-spacing: 8px;
+}
+
+#navbar {
+    position: sticky;
+    top: 0;
+    z-index:9999;
+  overflow: hidden;
+  background-color: #FAEBD7;
+}
+
+#navbar a {
+  float: left;
+  display: block;
+  color: #000000;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+.content {
+  padding: 16px;
+}
+
+.sticky + .content {
+  padding-top: 60px;
+}
+
+.searchbar{
+    background-color: #f9f4f0;
+    border-color: #f9f4f0;
+}
+
+.btn-search{
+    color: #FAEBD7;
+    background-color: #806248;
 }
