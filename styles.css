@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=Big+Shoulders+Inline+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@200;700&family=Big+Shoulders+Inline+Display&family=Cairo:wght@300&display=swap');
+
+body{
+    font-family: 'Cairo', sans-serif;
+}
+
+.headerfont{
+    font-family: 'Big Shoulders Inline Display', cursive;
+    letter-spacing: 8px;
+}
