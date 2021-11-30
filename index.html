@@ -55,7 +55,7 @@
         counter++;
         let title = restaurantName + " - " + restaurantAddress + " - " + restaurantRatings + " out of 5 \u2B50";
         let percentages = [];
-        let aspects = ['ambience', 'anecdotes', 'food', 'price', 'service']
+        let aspects = ['ambience', 'experience', 'food', 'price', 'service']
         for (el in aspects) {
           let pos = (restaurantSentiments[aspects[el]]['positive'] + restaurantSentiments[aspects[el]]['conflict'] + restaurantSentiments[aspects[el]]['neutral']);
           if (pos + restaurantSentiments[aspects[el]]['negative'] == 0) {
@@ -101,7 +101,7 @@
             'neutral': 0,
             'conflict': 0
           },
-          'anecdotes': {
+          'experience': {
             'positive': 0,
             'negative': 0,
             'none': 0,
@@ -133,13 +133,13 @@
         for (let i = 0; i < sentiments.length; i++) {
           let el = sentiments[i]
           let ambience = el['ambience'];
-          let anecdotes = el['anecdotes'];
+          let experience = el['experience'];
           let food = el['food'];
           let price = el['price'];
           let service = el['service'];
 
           aspects['ambience'][ambience] += 1;
-          aspects['anecdotes'][anecdotes] += 1;
+          aspects['experience'][experience] += 1;
           aspects['food'][food] += 1;
           aspects['price'][price] += 1;
           aspects['service'][service] += 1;
@@ -314,7 +314,7 @@
             </button>
           </div>
         </div>
-        <h1 id = "search" class="display-4 fw-bold">Search For Any Restaraunt</h1>
+        <h1 id = "search" class="display-6 fw-bold">Search For Any Restaraunt</h1>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <section class="pb-4">
             <div class="bg-white border rounded-5">
