@@ -57,21 +57,32 @@
         counter++;
         let title = restaurantName + " - " + restaurantAddress + " - " + restaurantRatings + " out of 5 \u2B50";
         let percentages = [];
+        let conflicted = [];
         let aspects = ['ambience', 'experience', 'food', 'price', 'service']
         for (el in aspects) {
           let pos = (restaurantSentiments[aspects[el]]['positive'] + restaurantSentiments[aspects[el]]['conflict'] + restaurantSentiments[aspects[el]]['neutral']);
-          if (pos + restaurantSentiments[aspects[el]]['negative'] == 0) {
+          let total = pos + restaurantSentiments[aspects[el]]['negative']
+          let conflict = restaurantSentiments[aspects[el]]['conflict']/ total
+          if (total == 0) {
             percentages.push(null)
+            conflicted.push(false)
           } else {
             percentages.push(pos / (pos + restaurantSentiments[aspects[el]]['negative']));
+            if (conflict >= 0.3) {
+              conflicted.push(true)
+            } else {
+              conflicted.push(false)
+            }
           }
         }
 
         let body = ""
         let i = 0
         aspects.forEach(function(aspect) {
-          if(percentages[i]) {
-            body = body + '<p>' + Math.floor(percentages[i] * 100) + '%' + " of users liked the " + aspect + '</p>';
+          if(percentages[i] && !conflicted[i]) {
+            body = body + '<p>' + Math.floor(percentages[i] * 100) + '%' + " of reviewers liked the " + aspect + '</p>';
+          }  else if(percentages[i] && conflicted[i]) {
+            body = body + '<p>' + Math.floor(percentages[i] * 100) + '%' + " of reviewers liked the " + aspect + " &#9888 reviewers are conflicted about this" + '</p>';
           }
           i++;
         });
@@ -154,7 +165,7 @@
 
 
       let endpoint = 'https://api.scaleserp.com/search'
-      let apiKey = 'D176D541CCEF48E3A608149CCD6DFEAC'
+      let apiKey = '59834E17FD5D4AAC9C41B245928A68F2'
 
       let loc = 'Cleveland,Ohio,United States'
 
@@ -316,7 +327,7 @@
             </button>
           </div>
         </div>
-        <h1 id = "search" class="display-6 fw-bold">Search For Any Restaraunt</h1>
+        <h1 id = "search" class="display-6 fw-bold">Search For Any Restaurant, Cuisine, Food</h1>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <section class="pb-4">
             <div class="bg-white border rounded-5">
