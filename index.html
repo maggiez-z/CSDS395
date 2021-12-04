@@ -15,6 +15,7 @@
 
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -29,6 +30,55 @@
     $(document).ready(function () {
 
       var counter = 0;
+
+      //number of restaurants to load
+      var numRestaurants = 5;
+
+      var numLoaded = 0;
+
+      //bind enter key to search button
+      $(document).keypress(function (e) {
+        if (e.which == 13) {
+          $("#searchbutton").click();
+        }
+      });
+
+      //replace "sort by" text on click
+      $(".dropdown-menu").on('click', 'li a', function(){
+        $("#option").text($(this).text());
+        $("#option").val($(this).text());
+      });
+
+      let button = document.getElementById("searchbutton")
+      let input = document.getElementById("input")
+
+      input.addEventListener("input", function(e) {
+        if(input.value.length == 0) {
+          button.disabled = true
+        } else {
+          button.disabled = false
+        }
+      })
+
+      $('#aspects').on('click', '.dropdown-item', function() { 
+        var aspect = "data-" + $(this).text();
+        var kiddos = $("#accordion").children(".card");
+        var l = kiddos.length
+        children = []
+        for(var i = 0; i < l; i++) {
+          children.push($(kiddos.eq(i)).detach());
+        }
+        children.sort(function(a,b) {
+          var compA = $(a).attr(aspect);
+          var compB = $(b).attr(aspect);
+          return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
+        });
+        for(var i = 0; i < l; i++) {
+          $("#accordion").append($(children[i]));
+        }
+
+      });
+
 
       function makeAccordion(restaurantName, restaurantRatings, restaurantAddress, restaurantSentiments) {
         console.log(restaurantSentiments);
@@ -56,7 +106,11 @@
 
         let body = ""
         let i = 0
+
+        restaurant_aspect_vals = {}
+
         aspects.forEach(function(aspect) {
+          restaurant_aspect_vals[aspect] = percentages[i]
           if(percentages[i] && !conflicted[i]) {
             body = body + '<p>' + Math.floor(percentages[i] * 100) + '%' + " of reviewers liked the " + aspect + '</p>';
           }  else if(percentages[i] && conflicted[i]) {
@@ -67,7 +121,7 @@
 
 
         $('#accordion').append('' +
-          '<div class="card">' +
+          '<div class="card" data-food="'+ restaurant_aspect_vals['food'] +'" data-ambience="'+ restaurant_aspect_vals['ambience'] +'" data-price="'+ restaurant_aspect_vals['price'] +'" data-service="'+ restaurant_aspect_vals['service'] +'">' +
           '<div class="card-header" id="heading' + counter + '">' +
           '<h5 class="mb-0">' +
           '<button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#collapse' + counter + '" aria-expanded="true" aria-controls="collapse' + counter + '">' +
@@ -143,7 +197,7 @@
 
 
       let endpoint = 'https://api.scaleserp.com/search'
-      let apiKey = '59834E17FD5D4AAC9C41B245928A68F2'
+      let apiKey = '8EBA41C0AB284A548356C2779D0FD2CA'
 
       let loc = 'Cleveland,Ohio,United States'
 
@@ -163,6 +217,7 @@
 
 
       $("#searchbutton").click(function () {
+        $(".loading").attr("style", "visibility: visible");
         name = $("#input").val();
         $('#loader').show(); //show loader
         const params = {
@@ -193,7 +248,8 @@
               google_domain: "google.com",
               data_id: -1
             }
-            for (let i = 0; i < Math.min(3, res.length); i++) {
+            var numToLoad = Math.min(numRestaurants, res.length);
+            for (let i = 0; i < numToLoad; i++) {
               id = res[i].data_id;
               review_params.data_id = id;
               //get reviews for this place
@@ -219,17 +275,25 @@
                   $.when(...promises).then(function(...responses){
                     const sentiments = responses.map(x => x[0]);
                     makeAccordion(res[i]["title"], res[i]["rating"], res[i]["address"], combineSentiments(sentiments));
-
+                    numLoaded = numLoaded + 1;
+                    console.log(numLoaded)
+                    checkDisplay();
                   });
+
+                  function checkDisplay() {
+                    console.log(reviews.length)
+                    if(numLoaded == numToLoad) {
+                      $(".loading").attr("style", "visibility: hidden");
+                    }
+                  }
+
                   
-                  //restaurants[id] = combineSentiments(sentiments);
                 },
                 error: function (error) {
                   console.log(`Error ${error}`);
                 }
               })
             }
-            //console.log(restaurants);
           },
           error: function (error) {
             $('#loader').hide() //hide loader on error
@@ -267,79 +331,53 @@
       });
     });
   </script>
+
+  <style>
+    .loading {
+      position: fixed;
+      z-index: 999;
+      height: 100%;
+      width: 100%;
+      overflow: show;
+      margin: auto;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background-color:white;
+    }
+
+  </style>
+
+
 </head>
 
 <body>
-  <div id = "navbar" class="navbar">
-    <a href = "#home">Home</a>
-    <h1 class = "display-4 fw-bold headerfont">Sentify</h1>
-    <a href = "#search">Search</a>
-  </div>
-  <!--Title code and description-->
-  <main>
-    <div class="px-4 py-5 my-5 text-center">
-      <div class="col-lg-6 mx-auto">
-        <p id = "home" class="lead mb-4">Learn How People Really Feel About Restaraunts All Around The Globe</p>
-        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-          <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img src="Platter.jpg" class="d-block w-100" alt="Cannot display image.">
-              </div>
-              <div class="carousel-item">
-                <img src="Fancy.jpg" class="d-block w-100" alt="Cannot display image.">
-              </div>
-              <div class="carousel-item">
-                <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
-              </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-              data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-              data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
-        </div>
-        <h1 id = "search" class="display-6 fw-bold">Search For Any Restaurant, Cuisine, Food</h1>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <section class="pb-4">
-            <div class="bg-white border rounded-5">
-              <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column searchbar">
-                <div class="input-group">
-                  <input type="search" id="input" class="form-control rounded-left" placeholder="Italian, burgers, sushi, mexican"
-                    aria-label="Search" aria-describedby="search-addon">
-                  <button type="button" id="searchbutton" class="btn btn-search ripple-surface"
-                    style="min-width: 94px;">search</button>
-                </div>
-              </section>
-            </div>
-            <div class = "loading-gif">
-              <img src="loader.gif" id="loader" width="60" height="60" style="display:none" >
-            </div>
-          </section>
-        </div>
-      </div>
-      <div class="container px-4">
-      </div>
-      <!--Carousel of API photos-->
+  <div id="content">
+    <div class="loading" style="visibility: hidden;">
+      <image src="spinner.gif" style="position: fixed; z-index: 999; overflow: show; margin: auto; top: 0; left: 0; bottom: 0; right: 0;"></image>
+    </div>
+    <div id="navbar" class="navbar">
+      <a href="#home">Home</a>
+      <h1 class="display-4 fw-bold headerfont">Sentify</h1>
+      <a href="#search">Search</a>
+    </div>
+    <!--Title code and description-->
+    <main>
       <div class="px-4 py-5 my-5 text-center">
         <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">Learn How People Really Feel About Restaraunts All Around The Globe</p>
           <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
               <div class="carousel-inner">
                 <div class="carousel-item active">
-                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                  <img src="Platter.jpg" class="d-block w-100" alt="Cannot display image.">
                 </div>
                 <div class="carousel-item">
-                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                  <img src="Fancy.jpg" class="d-block w-100" alt="Cannot display image.">
                 </div>
                 <div class="carousel-item">
-                  <img src="" class="d-block w-100" alt="Cannot display image.">
+                  <img src="Outside.jpg" class="d-block w-100" alt="Cannot display image.">
                 </div>
               </div>
               <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
@@ -354,34 +392,106 @@
               </button>
             </div>
           </div>
+          <h1 id = "search" class="display-6 fw-bold">Search For Any Restaurant, Cuisine, Food</h1>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <section class="pb-4">
+              <div class="bg-white border rounded-5">
+                <section class="w-100 p-4 pb-4 d-flex justify-content-center align-items-center flex-column searchbar">
+                  <div class="input-group">
+                    <input type="search" id="input" class="form-control rounded-left" placeholder="Italian, burgers, sushi, mexican"
+                      aria-label="Search" aria-describedby="search-addon">
+                    <button type="button" id="searchbutton" class="btn btn-search ripple-surface"
+                      style="min-width: 94px;" disabled>search</button>
+                  </div>
+                </section>
+              </div>
+              <div class = "loading-gif">
+                <img src="loader.gif" id="loader" width="60" height="60" style="display:none" >
+              </div>
+            </section>
+          </div>
         </div>
-
+        <div class="container px-4">
+        </div>
+        <!--Carousel of API photos-->
+        <div class="px-4 py-5 my-5 text-center">
+          <div class="col-lg-6 mx-auto">
+            <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+              <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="" class="d-block w-100" alt="Cannot display image.">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="" class="d-block w-100" alt="Cannot display image.">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="" class="d-block w-100" alt="Cannot display image.">
+                  </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                  data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                  data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <p>Sort by:</p>
+  
+  
+        <div class="btn-group">
+          <button type="button" id="option" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown">
+            Option: <span class="selection" id="selection">Option 1</span><span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" id="aspects">
+            <li><a class="dropdown-item" id="food">food</a></li>
+            <li><a class="dropdown-item" id="price">price</a></li>
+            <li><a class="dropdown-item" id="service">service</a></li>
+            <li><a class="dropdown-item" id="ambience">ambience</a></li>
+          </ul>
+        </div>
+    
+  
         <!--List of restaurants-->
         <div id="accordion">
-
+  
         </div>
-
+  
+  
+        
+  
+  
+    </main>
+  
+    <main>
+  
+      <head>
+        <style>
+          meter {
+            width: 300px;
+            height: 50px;
+          }
+        </style>
+      </head>
+    </main>
+    <main>
+      <div class="px-4 py-5 my-5 text-center">
+        <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
+        <a href="https://aws.amazon.com/what-is-cloud-computing"><img
+            src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
       </div>
-  </main>
+    </main>
 
-  <main>
-
-    <head>
-      <style>
-        meter {
-          width: 300px;
-          height: 50px;
-        }
-      </style>
-    </head>
-  </main>
-  <main>
-    <div class="px-4 py-5 my-5 text-center">
-      <p class="lead mb-4">Harnessing The Power of Natural Language Processing</p>
-      <a href="https://aws.amazon.com/what-is-cloud-computing"><img
-          src="https://d0.awsstatic.com/logos/powered-by-aws.png" alt="Powered by AWS Cloud Computing"></a>
-    </div>
-  </main>
+  </div>
+  
 </body>
 
 </html>
